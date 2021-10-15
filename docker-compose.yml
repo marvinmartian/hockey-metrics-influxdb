@@ -1,0 +1,48 @@
+version: '3'
+
+services:
+  influxdb:
+    image: influxdb:alpine
+    container_name: influxdb
+    volumes:
+      # Mount for influxdb data directory and configuration
+      - ./data:/var/lib/influxdb2
+      - ./config:/etc/influxdb2
+    environment: 
+      - DOCKER_INFLUXDB_INIT_MODE=${DOCKER_INFLUXDB_INIT_MODE}
+      - DOCKER_INFLUXDB_INIT_USERNAME=${DOCKER_INFLUXDB_INIT_USERNAME}
+      - DOCKER_INFLUXDB_INIT_PASSWORD=${DOCKER_INFLUXDB_INIT_PASSWORD}
+      - DOCKER_INFLUXDB_INIT_ORG=${DOCKER_INFLUXDB_INIT_ORG}
+      - DOCKER_INFLUXDB_INIT_BUCKET=${DOCKER_INFLUXDB_INIT_BUCKET}
+      - DOCKER_INFLUXDB_INIT_RETENTION=${DOCKER_INFLUXDB_INIT_RETENTION}
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=${DOCKER_INFLUXDB_INIT_ADMIN_TOKEN}
+    ports:
+      - "8086:8086"
+
+  nginx: 
+    image: nginx:alpine
+    container_name: nginx
+    ports:
+      - "8100:8100"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./nginx/sample1.json:/var/www/sample1.json
+      - ./nginx/sample2.json:/var/www/sample2.json
+      - ./nginx/sample3.json:/var/www/sample3.json
+      
+    
+  telegraf:
+    image: telegraf:alpine
+    container_name: telegraf
+    links:
+      - influxdb
+    # environment: 
+    #   - INFLUX_TOKEN=my-super-secret-auth-token
+    volumes:
+      # Mount for telegraf config
+      - ./telegraf/mytelegraf.conf:/etc/telegraf/telegraf.conf
+    depends_on:
+      - influxdb
+volumes:
+  influxdbv2:
+  grafana_data: 
