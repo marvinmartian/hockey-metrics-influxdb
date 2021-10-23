@@ -1568,7 +1568,8 @@
     },
     "liveData" : {
       "plays" : {
-        "allPlays" : [ {
+        "allPlays" : [ 
+          {
           "result" : {
             "event" : "Game Scheduled",
             "eventCode" : "MIN1",
